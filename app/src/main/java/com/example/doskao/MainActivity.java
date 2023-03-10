@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 if (index == 0)
                 {
-                    signUp(edEmail.getText().toString(),edEmail.getText().toString());
+                    signUp(edEmail.getText().toString(),edPassword.getText().toString());
                 }
             }
         });
@@ -132,14 +133,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     private void signUp(String email, String password)
     {
-        if (email.equals("")&& !password.equals("")){
+        if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
-                            Log.d("MyLogMainActivity" , "createUserWithEmail:success");
+
                             FirebaseUser user = mAuth.getCurrentUser();
+                            if (user != null) {
+                                Toast.makeText(getApplicationContext(), "SignUp done... user email: " + user.getEmail(),
+                                        Toast.LENGTH_SHORT).show();
+                                Log.d("MyLogMainActivity", "createUserWithEmail:success " + user.getEmail());
+                            }
                         }else {
                             Log.w("MyLogMainActivity", "createUserWithEmail:failure", task.getException());
                             Toast.makeText(getApplicationContext(), "authentication failed.",
@@ -150,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
         else {
-            Toast.makeText(this, "Email")
+            Toast.makeText(this, "Email или Password пустой!", Toast.LENGTH_SHORT).show();
         }
 
 }}
