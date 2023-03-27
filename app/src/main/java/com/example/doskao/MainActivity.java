@@ -114,22 +114,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         titleTextView.setText(title);
 
         Button b = dialogView.findViewById(R.id.buttonSignUp);
-        EditText edEmail = dialogView.findViewById(R.id.edEmail);
-        EditText edPassword = dialogView.findViewById(R.id.edPassword);
+        final EditText edEmail = dialogView.findViewById(R.id.edEmail);
+        final EditText edPassword = dialogView.findViewById(R.id.edPassword);
         b.setText(buttonTitle);
-
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (index == 0)
-                {
-                    signUp(edEmail.getText().toString(),edPassword.getText().toString());
-                }
+        b.setOnClickListener((v)->{
+            if(index == 0)
+            {
+                signUp(edEmail.getText().toString(), edPassword.getText().toString());
+            }
+            else
+            {
+                signIn(edEmail.getText().toString(),edPassword.getText().toString());
             }
         });
-
         AlertDialog dialog = dialogBuilder.create();
         dialog.show();
+
+
+
+
     }
     private void signUp(String email, String password)
     {
@@ -146,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         Toast.LENGTH_SHORT).show();
                                 Log.d("MyLogMainActivity", "createUserWithEmail:success " + user.getEmail());
                             }
+
                         }else {
                             Log.w("MyLogMainActivity", "createUserWithEmail:failure", task.getException());
                             Toast.makeText(getApplicationContext(), "authentication failed.",
@@ -159,4 +163,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(this, "Email или Password пустой!", Toast.LENGTH_SHORT).show();
         }
 
-}}
+    }
+    private void signIn(String email, String password)
+    {
+        if (!email.equals("") && !password.equals("")){
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void  onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("MyLogMainActivity", "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if(user != null)
+                            {
+                                Toast.makeText(getApplicationContext(), "SignIn done ... user email: " + user.getEmail(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+                        } else {
+                            Log.w("MyLogMainActivity", "signInWithEmail:failure", task.getException());
+                            Toast.makeText(getApplicationContext(), "Authentification failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+        }
+        else
+        {
+            Toast.makeText(this, "Email или Password пустой!!", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
